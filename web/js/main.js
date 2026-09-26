@@ -6,16 +6,24 @@
 window.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
+  let savedVariant = null;
+  let savedBodyColor = null;
+  try {
+    savedVariant = localStorage.getItem('stickfall-warrior');
+    const storedColor = localStorage.getItem('stickfall-body-color');
+    if (/^#[\da-f]{6}$/i.test(storedColor || '')) savedBodyColor = storedColor;
+  } catch (_) {}
 
   const arena = new Arena();
 
   // Create Players with authentic asset pack sprites
   const p1 = new Stickman({
     name: 'Player 1',
-    variant: 'shadow',
+    variant: savedVariant || 'shadow',
     x: 450,
     y: 678,
     facing: 1,
+    customBodyColor: savedBodyColor,
   });
 
   const p2 = new Stickman({
@@ -309,17 +317,86 @@ window.addEventListener('DOMContentLoaded', () => {
     toxic:   { weapon: '#41ff2d', eye: '#41ff2d' },
   };
 
+  const warriorNames = { shadow: 'SHADOW NINJA', yellow: 'GOLDEN GOD', cyan: 'CYBER CYAN', crimson: 'CRIMSON FURY', toxic: 'TOXIC EMERALD' };
+  const previewCanvas = document.getElementById('menuFighterPreview');
+  const previewCtx = previewCanvas.getContext('2d');
+  const menuSkinButtons = document.querySelectorAll('.menu-skin');
+  function selectWarrior(variant, playSound = true) {
+    p1.variant = variant;
+    p1.customBodyColor = null;
+    Sprites.clearTintCache();
+    try { localStorage.removeItem('stickfall-body-color'); } catch (_) {}
+    if (skinThemes[variant]) {
+      p1.weaponColor = skinThemes[variant].weapon;
+      p1.eyeColor = skinThemes[variant].eye;
+    }
+    try { localStorage.setItem('stickfall-warrior', variant); } catch (_) {}
+    document.getElementById('menuFighterName').textContent = warriorNames[variant] || 'SHADOW NINJA';
+    document.getElementById('customColorValue').textContent = 'PRESET';
+    document.querySelectorAll('.texture-swatch').forEach(button => button.classList.remove('selected'));
+    skinCards.forEach(c => c.classList.toggle('selected', c.dataset.variant === variant));
+    menuSkinButtons.forEach(c => {
+      const selected = c.dataset.variant === variant;
+      c.classList.toggle('selected', selected);
+      c.setAttribute('aria-pressed', String(selected));
+    });
+    if (playSound) Audio.playWhoosh();
+  }
+
+  menuSkinButtons.forEach(button => button.addEventListener('click', () => selectWarrior(button.dataset.variant)));
+  const paletteCanvas = document.getElementById('customColorPalette');
+  const paletteCtx = paletteCanvas.getContext('2d', { willReadFrequently: true });
+  const paletteImage = new Image();
+  paletteImage.src = 'assets/customizer/Color%20Palette.png';
+  paletteImage.onload = () => paletteCtx.drawImage(paletteImage, 0, 0, paletteCanvas.width, paletteCanvas.height);
+
+  function applyBodyColor(color, sourceButton = null) {
+    p1.customBodyColor = color;
+    p1.weaponColor = color;
+    p1.eyeColor = color;
+    Sprites.clearTintCache();
+    try { localStorage.setItem('stickfall-body-color', color); } catch (_) {}
+    document.getElementById('customColorValue').textContent = color.toUpperCase();
+    document.querySelectorAll('.texture-swatch').forEach(button => button.classList.toggle('selected', button === sourceButton));
+    Audio.playWhoosh();
+  }
+
+  document.querySelectorAll('.texture-swatch').forEach(button => {
+    button.addEventListener('click', () => applyBodyColor(button.dataset.color, button));
+  });
+  paletteCanvas.addEventListener('click', event => {
+    const rect = paletteCanvas.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1023, Math.floor((event.clientX - rect.left) * paletteCanvas.width / rect.width)));
+    const y = Math.max(0, Math.min(1023, Math.floor((event.clientY - rect.top) * paletteCanvas.height / rect.height)));
+    const [r, g, b] = paletteCtx.getImageData(x, y, 1, 1).data;
+    applyBodyColor(`#${[r, g, b].map(value => value.toString(16).padStart(2, '0')).join('')}`);
+  });
+
+  selectWarrior(p1.variant, false);
+  if (savedBodyColor) {
+    p1.customBodyColor = savedBodyColor;
+    p1.weaponColor = savedBodyColor;
+    p1.eyeColor = savedBodyColor;
+    document.getElementById('customColorValue').textContent = savedBodyColor.toUpperCase();
+  }
+  function drawMenuFighter() {
+    previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    const source = Sprites.getImage(p1.variant, 'idle');
+    // Keep the selected preview on a single idle frame; cycling alternate
+    // palette sheets here causes visible flicker while the player browses.
+    const frame = 0;
+    const image = p1.customBodyColor
+      ? Sprites.getTintedImage(p1.variant, 'idle', frame, p1.customBodyColor)
+      : source;
+    const imageReady = image && (image instanceof HTMLCanvasElement || (image.complete && image.naturalWidth));
+    if (imageReady) {
+      previewCtx.drawImage(image, p1.customBodyColor ? 0 : frame * 128, 0, 128, 64, 0, 8, 256, 128);
+    }
+  }
+
   skinCards.forEach(card => {
     card.addEventListener('click', () => {
-      const variant = card.dataset.variant || 'shadow';
-      p1.variant = variant;
-      if (skinThemes[variant]) {
-        p1.weaponColor = skinThemes[variant].weapon;
-        p1.eyeColor = skinThemes[variant].eye;
-      }
-      skinCards.forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      Audio.playWhoosh();
+      selectWarrior(card.dataset.variant || 'shadow');
     });
   });
 
@@ -396,6 +473,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Main Menu State: Animate ambient arena atmosphere and render background
     if (gameState === 'menu') {
       arena.update(dt);
+      drawMenuFighter(time);
       render();
       return;
     }

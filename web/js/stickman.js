@@ -8,6 +8,7 @@ class Stickman {
     this.name = options.name || 'Player 1';
     this.isBot = options.isBot || false;
     this.variant = options.variant || 'shadow';
+    this.customBodyColor = options.customBodyColor || null;
     this.x = options.x || 450;
     this.y = options.y || 678;
     this.vx = 0;
@@ -753,18 +754,22 @@ class Stickman {
   }
 
   draw(ctx) {
-    const img = Sprites.getImage(this.variant, this.animName);
-    if (!img) return;
-
+    const sourceImg = Sprites.getImage(this.variant, this.animName);
     const def = ANIMATION_DEFS[this.animName];
     const frameIndex = Math.min(this.animFrame, def ? def.frames - 1 : 0);
+    const img = this.customBodyColor
+      ? Sprites.getTintedImage(this.variant, this.animName, frameIndex, this.customBodyColor)
+      : sourceImg;
+    if (!img) return;
 
     const dw = this.fw * this.drawScale;
     const dh = this.fh * this.drawScale;
 
     // Draw Phantom Shadows
     for (const s of this.shadows) {
-      const sImg = Sprites.getImage(this.variant, s.animName);
+      const sImg = this.customBodyColor
+        ? Sprites.getTintedImage(this.variant, s.animName, s.animFrame, this.customBodyColor)
+        : Sprites.getImage(this.variant, s.animName);
       if (!sImg) continue;
       ctx.save();
       ctx.globalAlpha = s.alpha * 0.5;

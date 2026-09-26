@@ -28,6 +28,7 @@ class SpriteAtlas {
   constructor() {
     this.sheets = {};
     this.loaded = false;
+    this.tintedSheets = new Map();
   }
 
   preloadAll(onComplete) {
@@ -71,6 +72,38 @@ class SpriteAtlas {
       return this.sheets[variant][animKey];
     }
     return this.sheets['yellow'] ? this.sheets['yellow'][animKey] : null;
+  }
+
+  getTintedImage(variant, animKey, frame, color) {
+    const source = this.getImage(variant, animKey);
+    if (!source || !source.complete || !source.naturalWidth || !color) return source;
+    const key = `${variant}:${animKey}:${frame}:${color}`;
+    if (this.tintedSheets.has(key)) return this.tintedSheets.get(key);
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(source, frame * 128, 0, 128, 64, 0, 0, 128, 64);
+    const pixels = ctx.getImageData(0, 0, 128, 64);
+    const tint = color.match(/^#([\da-f]{6})$/i);
+    if (!tint) return source;
+    const rgb = [0, 2, 4].map(offset => parseInt(tint[1].slice(offset, offset + 2), 16));
+    for (let i = 0; i < pixels.data.length; i += 4) {
+      if (pixels.data[i + 3] === 0) continue;
+      const light = pixels.data[i] * 0.299 + pixels.data[i + 1] * 0.587 + pixels.data[i + 2] * 0.114;
+      if (light < 18) continue;
+      const shade = Math.max(0.32, Math.min(1.12, 0.32 + light / 315));
+      pixels.data[i] = Math.round(rgb[0] * shade);
+      pixels.data[i + 1] = Math.round(rgb[1] * shade);
+      pixels.data[i + 2] = Math.round(rgb[2] * shade);
+    }
+    ctx.putImageData(pixels, 0, 0);
+    this.tintedSheets.set(key, canvas);
+    return canvas;
+  }
+
+  clearTintCache() {
+    this.tintedSheets.clear();
   }
 }
 

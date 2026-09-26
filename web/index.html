@@ -38,45 +38,38 @@
     <div class="menu-particles" id="menuParticles"></div>
 
     <div class="menu-content">
-      <!-- Title & Branding -->
-      <div class="menu-logo-box">
-        <div class="menu-badge">2D ARENA FIGHTER</div>
-        <h1 class="menu-game-title">STICK<span class="highlight">FALL</span></h1>
-        <p class="menu-tagline">SHADOWS OF THE MOONLIT CATHEDRAL</p>
-      </div>
-
-      <!-- Mode Selection Grid -->
-      <div class="menu-modes-grid">
-        <div class="menu-mode-card active" data-mode="training">
-          <div class="mode-icon">🎯</div>
-          <div class="mode-title">TRAINING DOJO</div>
-          <div class="mode-desc">Practice 4-hit combos, shield deflects & 2X counters against a training dummy.</div>
+      <section class="menu-main">
+        <div class="menu-logo-box">
+          <div class="menu-badge"><span class="live-dot"></span> THE ARENA IS OPEN</div>
+          <h1 class="menu-game-title">STICK<span class="highlight">FALL</span></h1>
+          <p class="menu-tagline">A moonlit arena. One last fighter standing.</p>
         </div>
-
-        <div class="menu-mode-card" data-mode="cpu">
-          <div class="mode-icon">🤖</div>
-          <div class="mode-title">VS CPU BOT</div>
-          <div class="mode-desc">Duel an intelligent stickman bot that attacks, jumps ledges, and parries.</div>
+        <div class="mode-heading"><span>CHOOSE YOUR FIGHT</span><span class="mode-hint">01 — GAME MODE</span></div>
+        <div class="menu-modes-grid">
+          <button class="menu-mode-card active" data-mode="training" type="button"><span class="mode-index">01</span><span class="mode-icon">◎</span><span class="mode-title">TRAINING</span><span class="mode-desc">Sharpen your combos against a dummy.</span></button>
+          <button class="menu-mode-card" data-mode="cpu" type="button"><span class="mode-index">02</span><span class="mode-icon">⚔</span><span class="mode-title">VS CPU</span><span class="mode-desc">Take on a relentless arena fighter.</span></button>
+          <button class="menu-mode-card" data-mode="2p" type="button"><span class="mode-index">03</span><span class="mode-icon">⇄</span><span class="mode-title">LOCAL DUEL</span><span class="mode-desc">Settle it on one keyboard.</span></button>
         </div>
-
-        <div class="menu-mode-card" data-mode="2p">
-          <div class="mode-icon">👥</div>
-          <div class="mode-title">2-PLAYER DUEL</div>
-          <div class="mode-desc">Local 1v1 multiplayer on the same keyboard. Fight a friend to the death!</div>
+        <div class="menu-bottom-row">
+          <button id="btnStartGame" class="btn-start-game" type="button"><span class="btn-text">ENTER THE ARENA <b>↗</b></span><span class="btn-subtext">READY WHEN YOU ARE</span></button>
+          <button id="btnMenuControls" class="menu-action-btn" type="button"><span class="action-icon">⌨</span><span><b>HOW TO PLAY</b><small>Controls & combat moves</small></span><span class="action-arrow">→</span></button>
         </div>
-      </div>
-
-      <!-- Start Game Primary Action -->
-      <button id="btnStartGame" class="btn-start-game">
-        <span class="btn-text">⚔️ ENTER ARENA</span>
-        <span class="btn-subtext">CLICK TO PLAY</span>
-      </button>
-
-      <!-- Auxiliary Menu Actions -->
-      <div class="menu-actions-row">
-        <button id="btnMenuSkins" class="menu-action-btn">🎨 Choose Warrior Skin</button>
-        <button id="btnMenuControls" class="menu-action-btn">⌨️ How to Play & Combos</button>
-      </div>
+        <div class="menu-footnote"><span>✦</span> MASTER THE MOVES. CLAIM THE NIGHT. <span>✦</span></div>
+      </section>
+      <aside class="menu-showcase">
+        <div class="showcase-top"><span>YOUR FIGHTER</span><span class="showcase-live">● READY</span></div>
+        <div class="fighter-stage"><div class="stage-ring"></div><div class="stage-glow"></div><canvas id="menuFighterPreview" width="256" height="256" aria-label="Your selected stickman fighter"></canvas><span class="stage-coordinate">ARENA / 01</span></div>
+        <div class="fighter-name-row"><div><span class="fighter-eyebrow">CURRENT WARRIOR</span><h2 id="menuFighterName">SHADOW NINJA</h2></div><span class="fighter-level">LVL <b>01</b></span></div>
+        <div class="menu-skin-heading"><span>CHOOSE YOUR LOOK</span><span>05 WARRIORS</span></div>
+        <div class="menu-skin-grid" role="group" aria-label="Choose warrior appearance">
+          <button class="menu-skin selected" type="button" data-variant="shadow" aria-label="Shadow Ninja" title="Shadow Ninja"><span style="--swatch:#ff385c"></span></button>
+          <button class="menu-skin" type="button" data-variant="yellow" aria-label="Golden God" title="Golden God"><span style="--swatch:#ffe35b"></span></button>
+          <button class="menu-skin" type="button" data-variant="cyan" aria-label="Cyber Cyan" title="Cyber Cyan"><span style="--swatch:#49d9ee"></span></button>
+          <button class="menu-skin" type="button" data-variant="crimson" aria-label="Crimson Fury" title="Crimson Fury"><span style="--swatch:#ff6470"></span></button>
+          <button class="menu-skin" type="button" data-variant="toxic" aria-label="Toxic Emerald" title="Toxic Emerald"><span style="--swatch:#a7ed66"></span></button>
+        </div>
+        <button id="btnMenuSkins" class="showcase-footer" type="button"><span>✦ CUSTOMIZE YOUR WARRIOR</span><span>↗</span></button>
+      </aside>
     </div>
   </div>
 
@@ -229,6 +222,24 @@
             </div>
           </div>
         </div>
+        <section class="custom-color-section" aria-label="Custom fighter colors">
+          <div class="custom-color-heading"><div><span class="custom-kicker">FROM YOUR ASSET PACK</span><h3>BODY COLOR</h3></div><span id="customColorValue">PRESET</span></div>
+          <div class="texture-swatches" aria-label="Material colors from the supplied Blender pack">
+            <button class="texture-swatch" type="button" data-color="#ffffff" aria-label="White material"><img src="assets/customizer/White_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#3a3a3a" aria-label="Black material"><img src="assets/customizer/Black_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#ed3030" aria-label="Red material"><img src="assets/customizer/Red_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#f5d91c" aria-label="Yellow material"><img src="assets/customizer/Yellow_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#31bb55" aria-label="Green material"><img src="assets/customizer/Green_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#52c9ed" aria-label="Light blue material"><img src="assets/customizer/LightBlue_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#ff851f" aria-label="Orange material"><img src="assets/customizer/Orange_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#e946a3" aria-label="Pink material"><img src="assets/customizer/Pink_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#8654d9" aria-label="Purple material"><img src="assets/customizer/Purple_texture.png" alt=""></button>
+            <button class="texture-swatch" type="button" data-color="#f1c49c" aria-label="Skin material"><img src="assets/customizer/Skin_texture.png" alt=""></button>
+          </div>
+          <div class="palette-label"><span>FULL COLOR PALETTE</span><span>CLICK ANY COLOR</span></div>
+          <canvas id="customColorPalette" width="1024" height="1024" aria-label="Choose any body color from the supplied palette"></canvas>
+          <p class="custom-color-note">Your color is applied to the fighter in the preview and in the arena.</p>
+        </section>
       </div>
     </div>
   </div>
