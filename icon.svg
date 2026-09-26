@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#1a1a2e"/>
+  <!-- Head -->
+  <circle cx="64" cy="30" r="12" fill="none" stroke="#ffffff" stroke-width="3"/>
+  <!-- Eyes -->
+  <circle cx="60" cy="28" r="2" fill="#ff4444"/>
+  <circle cx="68" cy="28" r="2" fill="#ff4444"/>
+  <!-- Body -->
+  <line x1="64" y1="42" x2="64" y2="75" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <!-- Arms -->
+  <line x1="64" y1="52" x2="42" y2="62" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <line x1="64" y1="52" x2="86" y2="48" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <!-- Sword -->
+  <line x1="86" y1="48" x2="105" y2="38" stroke="#ff4444" stroke-width="3" stroke-linecap="round"/>
+  <!-- Legs -->
+  <line x1="64" y1="75" x2="48" y2="100" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <line x1="64" y1="75" x2="80" y2="100" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <!-- Title -->
+  <text x="64" y="120" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="#ff4444" text-anchor="middle">STICKFALL</text>
+</svg>

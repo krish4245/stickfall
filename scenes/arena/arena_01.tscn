@@ -1,0 +1,136 @@
+[gd_scene load_steps=14 format=3 uid="uid://arena_01"]
+
+[ext_resource type="Script" path="res://scripts/arena/arena.gd" id="1_arena"]
+[ext_resource type="Texture2D" path="res://assets/arenas/cathedral_arena.jpg" id="2_bg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(2000, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plat_left"]
+size = Vector2(280, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plat_center"]
+size = Vector2(330, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plat_midleft"]
+size = Vector2(250, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plat_right"]
+size = Vector2(320, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plat_plateau"]
+size = Vector2(310, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plat_moon"]
+size = Vector2(150, 18)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(40, 1200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ceiling"]
+size = Vector2(2200, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_killzone"]
+size = Vector2(3000, 100)
+
+[node name="Arena01" type="Node2D"]
+script = ExtResource("1_arena")
+arena_name = "Moonlit Cathedral"
+
+[node name="BackgroundSprite" type="Sprite2D" parent="."]
+scale = Vector2(1.875, 1.875)
+texture = ExtResource("2_bg")
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(0, 276)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="LeftWall" type="StaticBody2D" parent="."]
+position = Vector2(-960, 0)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="RightWall" type="StaticBody2D" parent="."]
+position = Vector2(960, 0)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="Ceiling" type="StaticBody2D" parent="."]
+position = Vector2(0, -540)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
+shape = SubResource("RectangleShape2D_ceiling")
+
+[node name="LeftBalcony" type="StaticBody2D" parent="."]
+position = Vector2(-660, -144)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftBalcony"]
+shape = SubResource("RectangleShape2D_plat_left")
+
+[node name="CenterIsland" type="StaticBody2D" parent="."]
+position = Vector2(-97, 82)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CenterIsland"]
+shape = SubResource("RectangleShape2D_plat_center")
+
+[node name="MidLeftIsland" type="StaticBody2D" parent="."]
+position = Vector2(-472, 41)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MidLeftIsland"]
+shape = SubResource("RectangleShape2D_plat_midleft")
+
+[node name="RightBalcony" type="StaticBody2D" parent="."]
+position = Vector2(765, -52)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightBalcony"]
+shape = SubResource("RectangleShape2D_plat_right")
+
+[node name="UpperPlateau" type="StaticBody2D" parent="."]
+position = Vector2(493, -193)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperPlateau"]
+shape = SubResource("RectangleShape2D_plat_plateau")
+
+[node name="MoonIsland" type="StaticBody2D" parent="."]
+position = Vector2(193, -249)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MoonIsland"]
+shape = SubResource("RectangleShape2D_plat_moon")
+
+[node name="SpawnPoint1" type="Marker2D" parent="."]
+position = Vector2(-300, 220)
+
+[node name="SpawnPoint2" type="Marker2D" parent="."]
+position = Vector2(300, 220)
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2(0, 620)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+shape = SubResource("RectangleShape2D_killzone")

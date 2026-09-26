@@ -1,0 +1,127 @@
+[gd_scene load_steps=16 format=3 uid="uid://player_scene"]
+
+[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/player/player_state_machine.gd" id="2_sm"]
+[ext_resource type="Script" path="res://scripts/player/states/idle_state.gd" id="3_idle"]
+[ext_resource type="Script" path="res://scripts/player/states/run_state.gd" id="4_run"]
+[ext_resource type="Script" path="res://scripts/player/states/jump_state.gd" id="5_jump"]
+[ext_resource type="Script" path="res://scripts/player/states/fall_state.gd" id="6_fall"]
+[ext_resource type="Script" path="res://scripts/player/states/attack_state.gd" id="7_attack"]
+[ext_resource type="Script" path="res://scripts/player/states/hit_state.gd" id="8_hit"]
+[ext_resource type="Script" path="res://scripts/player/states/death_state.gd" id="9_death"]
+[ext_resource type="Script" path="res://scripts/combat/hitbox.gd" id="10_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/hurtbox.gd" id="11_hurtbox"]
+[ext_resource type="Script" path="res://scripts/combat/health_component.gd" id="12_health"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(24, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+size = Vector2(50, 30)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
+size = Vector2(28, 64)
+
+[node name="Player" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+position = Vector2(0, -30)
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Body" type="Polygon2D" parent="Visual"]
+color = Color(0.1, 0.1, 0.1, 1)
+polygon = PackedVector2Array(-4, -55, 4, -55, 4, -10, -4, -10)
+
+[node name="Head" type="Polygon2D" parent="Visual"]
+color = Color(0.1, 0.1, 0.1, 1)
+polygon = PackedVector2Array(-10, -72, 10, -72, 10, -52, -10, -52)
+
+[node name="LeftEye" type="Polygon2D" parent="Visual"]
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-6, -66, -2, -66, -2, -62, -6, -62)
+
+[node name="RightEye" type="Polygon2D" parent="Visual"]
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(2, -66, 6, -66, 6, -62, 2, -62)
+
+[node name="LeftArm" type="Polygon2D" parent="Visual"]
+position = Vector2(-2, -46)
+color = Color(0.1, 0.1, 0.1, 1)
+polygon = PackedVector2Array(-2, -2, -18, 11, -15, 14, 1, 2)
+
+[node name="RightArm" type="Polygon2D" parent="Visual"]
+position = Vector2(2, -46)
+color = Color(0.1, 0.1, 0.1, 1)
+polygon = PackedVector2Array(2, -2, 18, 11, 15, 14, -1, 2)
+
+[node name="LeftLeg" type="Polygon2D" parent="Visual"]
+position = Vector2(-1, -8)
+color = Color(0.1, 0.1, 0.1, 1)
+polygon = PackedVector2Array(-2, -2, -11, 8, -8, 11, 1, 1)
+
+[node name="RightLeg" type="Polygon2D" parent="Visual"]
+position = Vector2(1, -8)
+color = Color(0.1, 0.1, 0.1, 1)
+polygon = PackedVector2Array(2, -2, 11, 8, 8, 11, -1, 1)
+
+[node name="WeaponPivot" type="Node2D" parent="Visual"]
+position = Vector2(0, -40)
+
+[node name="Weapon" type="Polygon2D" parent="Visual/WeaponPivot"]
+color = Color(0.9, 0.15, 0.15, 1)
+polygon = PackedVector2Array(10, -3, 55, -3, 55, 3, 10, 3)
+
+[node name="Hitbox" type="Area2D" parent="Visual"]
+collision_layer = 8
+collision_mask = 16
+monitoring = false
+monitorable = false
+script = ExtResource("10_hitbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/Hitbox"]
+position = Vector2(40, -40)
+shape = SubResource("RectangleShape2D_hitbox")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 8
+script = ExtResource("11_hurtbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -30)
+shape = SubResource("RectangleShape2D_hurtbox")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("12_health")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("2_sm")
+initial_state = NodePath("IdleState")
+
+[node name="IdleState" type="Node" parent="StateMachine"]
+script = ExtResource("3_idle")
+
+[node name="RunState" type="Node" parent="StateMachine"]
+script = ExtResource("4_run")
+
+[node name="JumpState" type="Node" parent="StateMachine"]
+script = ExtResource("5_jump")
+
+[node name="FallState" type="Node" parent="StateMachine"]
+script = ExtResource("6_fall")
+
+[node name="AttackState" type="Node" parent="StateMachine"]
+script = ExtResource("7_attack")
+
+[node name="HitState" type="Node" parent="StateMachine"]
+script = ExtResource("8_hit")
+
+[node name="DeathState" type="Node" parent="StateMachine"]
+script = ExtResource("9_death")

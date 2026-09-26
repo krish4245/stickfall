@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>STICKFALL — Online Stickman Fighting Game</title>
+  <link rel="icon" type="image/svg+xml" href="../icon.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header>
+    <div class="brand">
+      <h1>STICK<span>FALL</span></h1>
+      <span class="tagline">2D Stickman Arena Fighter</span>
+    </div>
+
+    <div class="header-controls">
+      <!-- Game Mode Selector -->
+      <div class="mode-selector">
+        <button id="btnModeTraining" class="btn-mode active">🎯 Training</button>
+        <button id="btnModeCpu" class="btn-mode">🤖 VS CPU</button>
+        <button id="btnMode2P" class="btn-mode">👥 2-Player</button>
+      </div>
+
+      <button id="btnMainMenu" class="icon-btn" title="Return to Title Menu">🏠 Menu</button>
+      <button id="btnOpenSkins" class="icon-btn" title="Choose warrior skin">🎨 Skins</button>
+      <button id="btnOpenControls" class="icon-btn" title="View combat controls">⌨️ Controls</button>
+      <button id="btnReset" class="icon-btn" title="Reset match">🔄 Rematch</button>
+      <button id="btnMute" class="icon-btn" title="Toggle audio">🔊 Sound</button>
+      <button id="btnFullscreen" class="icon-btn" title="Toggle fullscreen">⛶ Fullscreen</button>
+    </div>
+  </header>
+
+  <!-- Title / Main Menu Screen Overlay -->
+  <div id="mainMenuScreen" class="main-menu-overlay active">
+    <div class="menu-particles" id="menuParticles"></div>
+
+    <div class="menu-content">
+      <!-- Title & Branding -->
+      <div class="menu-logo-box">
+        <div class="menu-badge">2D ARENA FIGHTER</div>
+        <h1 class="menu-game-title">STICK<span class="highlight">FALL</span></h1>
+        <p class="menu-tagline">SHADOWS OF THE MOONLIT CATHEDRAL</p>
+      </div>
+
+      <!-- Mode Selection Grid -->
+      <div class="menu-modes-grid">
+        <div class="menu-mode-card active" data-mode="training">
+          <div class="mode-icon">🎯</div>
+          <div class="mode-title">TRAINING DOJO</div>
+          <div class="mode-desc">Practice 4-hit combos, shield deflects & 2X counters against a training dummy.</div>
+        </div>
+
+        <div class="menu-mode-card" data-mode="cpu">
+          <div class="mode-icon">🤖</div>
+          <div class="mode-title">VS CPU BOT</div>
+          <div class="mode-desc">Duel an intelligent stickman bot that attacks, jumps ledges, and parries.</div>
+        </div>
+
+        <div class="menu-mode-card" data-mode="2p">
+          <div class="mode-icon">👥</div>
+          <div class="mode-title">2-PLAYER DUEL</div>
+          <div class="mode-desc">Local 1v1 multiplayer on the same keyboard. Fight a friend to the death!</div>
+        </div>
+      </div>
+
+      <!-- Start Game Primary Action -->
+      <button id="btnStartGame" class="btn-start-game">
+        <span class="btn-text">⚔️ ENTER ARENA</span>
+        <span class="btn-subtext">CLICK TO PLAY</span>
+      </button>
+
+      <!-- Auxiliary Menu Actions -->
+      <div class="menu-actions-row">
+        <button id="btnMenuSkins" class="menu-action-btn">🎨 Choose Warrior Skin</button>
+        <button id="btnMenuControls" class="menu-action-btn">⌨️ How to Play & Combos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Stage -->
+  <div id="gameWrapper">
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Overlay HUD -->
+    <div id="hudOverlay">
+      <!-- Health Bars -->
+      <div class="health-container">
+        <!-- Player 1 -->
+        <div class="fighter-card">
+          <div class="card-header">
+            <span class="name" style="color: #ff3355;">PLAYER 1</span>
+            <span id="p1HpText" class="hp-text">100 / 100</span>
+          </div>
+          <div class="hp-track">
+            <div id="p1HpBar" class="hp-fill p1" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <!-- FPS Display -->
+        <div style="color: #6ee7b7; font-family: monospace; font-size: 0.9rem; font-weight: bold; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 6px;" id="fpsDisplay">
+          60 FPS
+        </div>
+
+        <!-- Opponent / Dummy -->
+        <div class="fighter-card">
+          <div class="card-header">
+            <span id="p2NameLabel" class="name" style="color: #00e5ff;">DUMMY</span>
+            <span id="p2HpText" class="hp-text">100 / 100</span>
+          </div>
+          <div class="hp-track">
+            <div id="p2HpBar" class="hp-fill p2" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Combo Counter -->
+      <div id="comboDisplay">🔥 COMBO x3!</div>
+
+      <!-- K.O. Announcement Banner -->
+      <div id="koBanner" class="ko-banner">
+        <div class="ko-text">K.O.!</div>
+        <div id="koWinnerSub" class="ko-subtitle">PLAYER 1 WINS</div>
+        <div id="koRestartTimer" class="ko-timer">Next round starting in 3s...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls Modal Dialog -->
+  <div id="controlsModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>⌨️ COMBAT MOVES & CONTROLS</h2>
+        <button id="btnCloseControls" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge">A</span> <span class="key-badge">D</span></div>
+          <span class="control-label">Run Left / Right</span>
+        </div>
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge">W</span> / <span class="key-badge">Space</span></div>
+          <span class="control-label">Jump & Double Jump</span>
+        </div>
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge">S</span></div>
+          <span class="control-label">Drop Through Platform</span>
+        </div>
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge">Shift</span></div>
+          <span class="control-label">Flash Dash (Speed Burst & Invincible)</span>
+        </div>
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge">Left Click</span></div>
+          <span class="control-label">4-Hit Combo (Slash ➔ Sweep ➔ Rise ➔ Tornado)</span>
+        </div>
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge highlight-deflect">Right Click / F</span></div>
+          <span class="control-label"><b>Shield Deflect</b> (Absorbs 100% Damage)</span>
+        </div>
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge highlight-parry">Just Deflect (&lt;0.15s)</span></div>
+          <span class="control-label"><b>Perfect Parry</b> ➔ Anime Chime + <b>2X Counter Buff!</b></span>
+        </div>
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge highlight-slash">R</span></div>
+          <span class="control-label"><b>Throw Crescent Slash</b> (Flying Energy Blade)</span>
+        </div>
+        <div class="control-row" style="background: rgba(255, 215, 0, 0.09); border-color: rgba(255, 215, 0, 0.35);">
+          <div class="control-badges"><span class="key-badge" style="background: #ffd700; color: #000;">Wall + W / Space</span></div>
+          <span class="control-label"><b>Ninja Acrobatics</b>: Wall Cling / Slide ➔ 360° Somersault Wall Jump!</span>
+        </div>
+        <div class="control-row">
+          <div class="control-badges"><span class="key-badge">Q</span> / <span class="key-badge">E</span></div>
+          <span class="control-label">Downward Heavy Strike / Rapid Flurry Rush</span>
+        </div>
+        <div class="control-row" style="background: rgba(0, 213, 255, 0.08); border-color: rgba(0, 213, 255, 0.25);">
+          <div class="control-badges"><span class="key-badge">2-Player</span></div>
+          <span class="control-label">P2: Arrows, Enter to Strike, Num3/J to Deflect</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warrior Skins Modal Dialog -->
+  <div id="skinsModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>🎨 CHOOSE WARRIOR SKIN</h2>
+        <button id="btnCloseSkins" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="skin-grid">
+          <div class="skin-card selected" data-variant="shadow">
+            <div class="skin-swatch" style="background: #1e2230; border: 2px solid #ff3355;"></div>
+            <div class="skin-info">
+              <div class="skin-title">Shadow Ninja</div>
+              <div class="skin-desc">Dark assassin with glowing crimson eyes and blood-red slashes</div>
+            </div>
+          </div>
+          <div class="skin-card" data-variant="yellow">
+            <div class="skin-swatch" style="background: #fbf236; border: 2px solid #fff;"></div>
+            <div class="skin-info">
+              <div class="skin-title">Golden God</div>
+              <div class="skin-desc">Legendary yellow stickman hero with brilliant golden energy</div>
+            </div>
+          </div>
+          <div class="skin-card" data-variant="cyan">
+            <div class="skin-swatch" style="background: #00e5ff; border: 2px solid #fff;"></div>
+            <div class="skin-info">
+              <div class="skin-title">Cyber Cyan Warrior</div>
+              <div class="skin-desc">High-tech neon electric warrior with lightning speed slashes</div>
+            </div>
+          </div>
+          <div class="skin-card" data-variant="crimson">
+            <div class="skin-swatch" style="background: #ff3750; border: 2px solid #fff;"></div>
+            <div class="skin-info">
+              <div class="skin-title">Crimson Fury</div>
+              <div class="skin-desc">Blazing scarlet berserker radiating explosive critical power</div>
+            </div>
+          </div>
+          <div class="skin-card" data-variant="toxic">
+            <div class="skin-swatch" style="background: #41ff2d; border: 2px solid #fff;"></div>
+            <div class="skin-info">
+              <div class="skin-title">Toxic Emerald</div>
+              <div class="skin-desc">Radioactive bio-hazard blade master with green plasma blades</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/audio.js?v=2.2"></script>
+  <script src="js/particles.js?v=2.2"></script>
+  <script src="js/arena.js?v=2.2"></script>
+  <script src="js/sprite_loader.js?v=2.2"></script>
+  <script src="js/stickman.js?v=2.2"></script>
+  <script src="js/combat.js?v=2.2"></script>
+  <script src="js/ai.js?v=2.2"></script>
+  <script src="js/main.js?v=2.2"></script>
+
+</body>
+</html>

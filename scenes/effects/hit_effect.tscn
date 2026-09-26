@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://hit_effect"]
+
+[ext_resource type="Script" path="res://scripts/effects/hit_effect.gd" id="1_effect"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hit"]
+direction = Vector3(0, 0, 0)
+spread = 180.0
+initial_velocity_min = 100.0
+initial_velocity_max = 250.0
+gravity = Vector3(0, 200, 0)
+scale_min = 2.0
+scale_max = 5.0
+color = Color(1, 0.8, 0.2, 1)
+
+[node name="HitEffect" type="Node2D"]
+script = ExtResource("1_effect")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 12
+one_shot = true
+lifetime = 0.4
+process_material = SubResource("ParticleProcessMaterial_hit")

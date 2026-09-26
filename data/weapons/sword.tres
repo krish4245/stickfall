@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_data.gd" id="1_wd"]
+
+[resource]
+script = ExtResource("1_wd")
+weapon_name = "Sword"
+damage = 20.0
+knockback = 300.0
+attack_speed = 1.0
+range_pixels = 60.0
+cooldown = 0.35
+description = "A balanced blade. Fast, reliable, deadly."
