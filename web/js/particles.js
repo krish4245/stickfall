@@ -207,7 +207,6 @@ class ParticleSystem {
       maxLife: isCounter ? 1.0 : 0.75,
     });
   }
-
   update(dt) {
     // Update particles
     for (let i = this.particles.length - 1; i >= 0; i--) {
@@ -221,6 +220,13 @@ class ParticleSystem {
       p.vy = (p.vy + p.gravity * dt) * p.drag;
       p.x += p.vx * dt;
       p.y += p.vy * dt;
+      if (p.wobbleSpeed) {
+        p.wobblePhase = (p.wobblePhase || 0) + dt * p.wobbleSpeed;
+        p.x += Math.sin(p.wobblePhase) * (p.wobbleAmp || 1.5);
+      }
+      if (p.rotSpeed) {
+        p.rotation = (p.rotation || 0) + p.rotSpeed * dt;
+      }
     }
 
     // Update shockwaves
@@ -316,10 +322,34 @@ class ParticleSystem {
     for (const p of this.particles) {
       ctx.save();
       ctx.globalAlpha = Math.max(0, p.life);
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
+      if (p.glow) {
+        ctx.shadowColor = p.glow;
+        ctx.shadowBlur = p.glowBlur || 12;
+      }
+      if (p.isMote) {
+        // Hollow Knight ethereal moth scale / feather mote
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation || 0);
+        ctx.fillStyle = p.color;
+        // Diamond / lozenge moth scale
+        ctx.beginPath();
+        const w = p.size * 0.75;
+        const h = p.size * 1.6;
+        ctx.moveTo(0, -h);
+        ctx.quadraticCurveTo(w, 0, 0, h);
+        ctx.quadraticCurveTo(-w, 0, 0, -h);
+        ctx.fill();
+        // Inner core glint
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.restore();
     }
 

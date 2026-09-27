@@ -115,20 +115,60 @@ class SoundEngine {
   playDoubleJump() {
     if (this.muted || !this.ctx) return;
     const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
+    const vol = Math.max(0.01, this.volume);
 
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(320, now);
-    osc.frequency.exponentialRampToValueAtTime(720, now + 0.15);
+    // 1. Ethereal Chime (Harmonic sine waves ascending)
+    const osc1 = this.ctx.createOscillator();
+    const gain1 = this.ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(460, now);
+    osc1.frequency.exponentialRampToValueAtTime(920, now + 0.18);
+    gain1.gain.setValueAtTime(0.25 * vol, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+    osc1.connect(gain1);
+    gain1.connect(this.ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.26);
 
-    gain.gain.setValueAtTime(0.3 * this.volume, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    // 2. High Shimmer Harmonics
+    const osc2 = this.ctx.createOscillator();
+    const gain2 = this.ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(920, now + 0.02);
+    osc2.frequency.exponentialRampToValueAtTime(1450, now + 0.22);
+    gain2.gain.setValueAtTime(0.16 * vol, now + 0.02);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+    osc2.connect(gain2);
+    gain2.connect(this.ctx.destination);
+    osc2.start(now + 0.02);
+    osc2.stop(now + 0.28);
 
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.15);
+    // 3. Ethereal Wing Flap Gust (filtered noise burst)
+    try {
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.22);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(650, now);
+      filter.frequency.exponentialRampToValueAtTime(280, now + 0.20);
+      filter.Q.value = 1.2;
+
+      const noiseGain = this.ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.20 * vol, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(this.ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.22);
+    } catch (e) {}
   }
 
   playWallJump() {

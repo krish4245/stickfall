@@ -88,6 +88,7 @@ class Stickman {
     // Weapon/Eye accent
     this.eyeColor = options.eyeColor || (this.variant === 'shadow' ? '#ff3355' : '#ffffff');
     this.weaponColor = options.weaponColor || '#ff2244';
+
   }
 
   playAnim(name, forceRestart = false) {
@@ -303,16 +304,16 @@ class Stickman {
       Audio.playJump();
       VFX.spawnDust(this.x, this.y, 0, 6);
     } else if (this.canDoubleJump) {
-      // 3. Double Jump (cancels flip if mid-somersault)
+      // 3. Double Jump
       this.isWallJumping = false;
       this.flipAngle = 0;
       this.canDoubleJump = false;
       this.vy = -this.doubleJumpForce;
       this.playAnim('jump_peak', true);
       Audio.playDoubleJump();
-      VFX.spawnDust(this.x, this.y, 0, 10);
     }
   }
+
 
   wallJump() {
     const kickDir = -this.wallDir; // Kick off away from wall into arena
@@ -343,6 +344,7 @@ class Stickman {
     if (this.dashCooldown > 0) this.dashCooldown -= dt;
     if (this.parryCooldown > 0) this.parryCooldown -= dt;
     if (this.slashCooldown > 0) this.slashCooldown -= dt;
+
 
     // Update Parry Stance
     if (this.isParrying) {
@@ -819,6 +821,7 @@ class Stickman {
       ctx.rotate(-this.headLiftAngle);
       ctx.translate(-waistX, -waistY);
     }
+
 
     const sx = frameIndex * this.fw;
 

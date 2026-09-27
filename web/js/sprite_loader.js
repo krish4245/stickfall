@@ -108,3 +108,4 @@ class SpriteAtlas {
 }
 
 const Sprites = new SpriteAtlas();
+

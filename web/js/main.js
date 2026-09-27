@@ -181,7 +181,7 @@ window.addEventListener('DOMContentLoaded', () => {
       bot.setMode('fighter');
       p2.name = 'CPU Bot';
       p2.variant = 'crimson';
-      p2.maxHp = 100;
+      p2.maxHp = 150;
       p2.reset(1050, 678);
     } else if (mode === '2p') {
       btn2P.classList.add('active');
@@ -580,8 +580,9 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.scale(camera.zoom, camera.zoom);
     ctx.translate(-camera.x, -camera.y);
 
-    // 1. Draw Cathedral Background
+    // 1. Draw Hollow Knight Arena Background & Realistic Platforms
     arena.drawBackground(ctx, camera);
+    arena.drawPlatforms(ctx);
 
     // 2. Draw Stickman Fighters (P2 behind P1)
     p2.draw(ctx);
